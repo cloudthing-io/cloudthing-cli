@@ -85,7 +85,7 @@ To do so, please use our wizard by typing:
 
         buf := bytes.NewBuffer(enc)
         
-        url := fmt.Sprintf("http://localhost/api/v1/tenants")
+        url := fmt.Sprintf("http://api.cloudthing.iot/api/v1/tenants")
         req, err := http.NewRequest("POST", url, buf)
         if err != nil {
             log.WithError(err).Fatal("Failed to create request")

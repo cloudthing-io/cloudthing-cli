@@ -32,6 +32,13 @@ var log logger.Interface
 
 var ctx *api.Client
 
+func isAuth(cmd *cobra.Command, args []string) {
+    if !ctx.IsAuthenticated() {
+        log.Error("You need to login first")
+        os.Exit(-1)
+    }
+}
+
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "cloudthing",
@@ -56,14 +63,26 @@ If you still don't have an account, just type:
 
         ctx, err = api.NewClient(nil, fmt.Sprintf("http://%s", apiServer))
         if err != nil {
-            //log.WithError(err).Fatal("Couldn't create API client")
+            log.WithError(err).Fatal("Couldn't create API client")
             return
         }
 
         auth := utils.LoadAuth(apiServer)
 
         if auth != nil {
-            ctx.SetTokenAuth(auth)
+            err = ctx.SetTokenAuth(auth)
+            if err == nil {
+                return
+            }
+        } 
+        if path := viper.GetString("apikey"); path != "" {
+            key, secret, err := utils.LoadApikey(path)
+            if err == nil {
+                err = ctx.SetBasicAuth(key, secret)
+                if err == nil {
+                    utils.SaveAuth(apiServer, ctx.GetToken())
+                }
+            }
         }
     },
 }
@@ -71,7 +90,9 @@ If you still don't have an account, just type:
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+
     cmdns.Namespace(RootCmd)
+
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
@@ -105,6 +126,6 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		//fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 }

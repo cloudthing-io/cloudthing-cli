@@ -18,7 +18,7 @@ import (
     _"fmt"
     _"os"
     "github.com/spf13/cobra"
-    _"github.com/spf13/viper"
+    "github.com/spf13/viper"
     _"net/http"
     _"net/url"
     _"encoding/json"
@@ -64,7 +64,7 @@ to quickly create a Cobra application.`,
 }
 
 var tenantUpdateCmd = &cobra.Command{
-    Use:   "update name",
+    Use:   "update",
     Short: "Authenticates user and obtains authorization yokens",
     Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -79,7 +79,9 @@ to quickly create a Cobra application.`,
         	return
         }
 
-        tenant.Name = args[0]
+        if s := viper.GetString("tenant-update-name"); s != "" {
+            tenant.Name = s
+        }
         err = tenant.Save()
         if err != nil {
         	log.WithError(err).Error("Couldn'tupdate tenant")
@@ -90,6 +92,9 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
+    tenantUpdateCmd.Flags().String("name", "", "Organization's name")
+    viper.BindPFlag("tenant-update-name", tenantUpdateCmd.Flags().Lookup("name"))
+
 	tenantCmd.AddCommand(tenantUpdateCmd)
     RootCmd.AddCommand(tenantCmd)
 }
