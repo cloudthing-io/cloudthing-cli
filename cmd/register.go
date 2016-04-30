@@ -112,10 +112,10 @@ To do so, please use our wizard by typing:
         m := make(map[string]interface{})
         dec.Decode(&m)
 
-        log.Infof("Your tenant host is: %s", m["href"].(string))
-        log.Infof("You can now log in with flag --api-server=%s", m["href"].(string)[8:])
+        log.Infof("Your tenant host is: %s", m["host"].(string))
+        log.Infof("You can now log in with flag --api-server=%s", m["host"].(string)[8:])
 
-        viper.Set("api-server", m["href"].(string)[8:])
+        viper.Set("api-server", m["host"].(string)[8:])
 
     },
 }
