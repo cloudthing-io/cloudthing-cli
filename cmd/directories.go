@@ -33,7 +33,7 @@ var _ = fmt.Printf
 func printDirectory(p *api.Directory) {
     href := strings.Split(p.Href, "/")
     fmt.Printf("\n\tID: %s\n\tName: %s\n\n\tLink: %s\n\n\tDescription: %s\n\n\tOfficial: %t\n\n\tCreated at: %s\n\tUpdated at: %s\n",
-    href[len(href)-1], p.Name, p.Href, p.Description, *p.Official, p.CreatedAt, p.UpdatedAt)
+    href[len(href)-1], p.Name, p.Href, p.Description, *(p.Official), p.CreatedAt, p.UpdatedAt)
 }
 
 func printDirectoryShort(p *api.Directory) {

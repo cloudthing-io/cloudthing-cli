@@ -44,6 +44,8 @@ var RootCmd = &cobra.Command{
 	Use:   "cloudthing",
 	Short: "A CLI client for CloudThing.io",
 	Long: 	`A comand-line client for CloudThing.io Internet of Things cloud platform.
+You may find convenient auto-configuration by typing:
+    cloudthing configure
 Check out our getting started guides or simply login by typing:
     cloudthing login
 If you still don't have an account, just type:

@@ -83,6 +83,22 @@ var usersListCmd = &cobra.Command{
     },
 }
 
+var userCmd = &cobra.Command{
+    Use:   "user",
+    Short: "Show user details",
+    Long: `Prints details of user with specified ID`,
+    PreRun: isAuth,
+    Run: func(cmd *cobra.Command, args []string) {
+        obj, err := ctx.Users.GetCurrent()
+        if err != nil {
+            log.WithError(err).Fatal("Failed to get user")
+            os.Exit(-1)
+        }
+
+        printUser(obj)
+    },
+}
+
 var usersShowCmd = &cobra.Command{
     Use:   "show <id>",
     Short: "Show user details",
@@ -228,6 +244,7 @@ func init() {
     usersCmd.AddCommand(usersCreateCmd)
     usersCmd.AddCommand(usersDeleteCmd)
     RootCmd.AddCommand(usersCmd)
+    RootCmd.AddCommand(userCmd)
 }
     
 

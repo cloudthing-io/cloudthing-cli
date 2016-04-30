@@ -32,7 +32,7 @@ var AuthsFileName string
 
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
-    Use:   "login [email]",
+    Use:   "login <email>",
     Short: "Authenticates user and obtains authorization yokens",
     Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -61,7 +61,12 @@ to quickly create a Cobra application.`,
             return
         }
 
-        err = ctx.SetBasicAuth(args[0], string(pass))
+        arg := make([]interface{},0)
+        if s := viper.GetString("login-application"); s != "" {
+            arg = append(arg, s)
+        }
+
+        err = ctx.SetBasicAuth(args[0], string(pass), arg...)
 
         if err != nil {
             log.WithError(err).Fatal("Authentication failed")
@@ -81,6 +86,9 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
+    loginCmd.Flags().String("application", "", "Description of apikey")
+    viper.BindPFlag("login-application", loginCmd.Flags().Lookup("application"))
+
     RootCmd.AddCommand(loginCmd)
 
     dir, err := homedir.Dir()

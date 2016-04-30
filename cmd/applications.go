@@ -153,6 +153,7 @@ var applicationsUpdateCmd = &cobra.Command{
                 obj.Status = s
             }        
         }
+
         err := obj.Save()
         if err != nil {
             log.WithError(err).Fatal("Couldn't save application")
@@ -192,6 +193,16 @@ var applicationsCreateCmd = &cobra.Command{
                 req.Status = s
             }        
         }
+        if s := viper.GetString("application-create-directory"); s != "" {
+            dir, err := ctx.Directories.GetById(s)
+            if err != nil {
+                log.WithError(err).Error("Couldn't get directory")
+                os.Exit(-1)
+            }
+            req.Directory = &api.Link {
+                dir.Href,
+            }
+        }
         obj, err := ctx.Applications.Create(req)
         if err != nil {
             log.WithError(err).Fatal("Couldn't create application")
@@ -210,7 +221,8 @@ func init() {
 
     applicationsCreateCmd.Flags().String("status", "", "Status of application (ENABLED/DISABLED)")
     viper.BindPFlag("application-create-status", applicationsCreateCmd.Flags().Lookup("status"))
-
+    applicationsCreateCmd.Flags().String("directory", "", "Status of application (ENABLED/DISABLED)")
+    viper.BindPFlag("application-create-directory", applicationsCreateCmd.Flags().Lookup("directory"))
 
     applicationsUpdateCmd.Flags().String("name", "", "Name of application")
     viper.BindPFlag("application-update-name", applicationsUpdateCmd.Flags().Lookup("name"))
